@@ -1,0 +1,11 @@
+﻿  main.cpp
+  dispatcherModule.cpp
+  localControl.cpp
+  monitoringModule.cpp
+  niDAQWebInterface.cpp
+  prologWebClient.cpp
+  urlEncoding.cpp
+  warehouseWebServer.cpp
+  Gerando Código...
+  mongoose.c
+  serverEngine.vcxproj -> D:\SI\Supervisao-Inteligente\Labwork1\serverApp\Debug\serverEngine.exe
