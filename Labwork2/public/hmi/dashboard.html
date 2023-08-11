@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link rel="stylesheet" href="hmi.css" />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"
+      integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script>
+      function ajax_post_request(  endpoint,  query,  done_callback = null,  fail_callback = null) {
+        const xhttp = new XMLHttpRequest();
+        xhttp.onload = function () {
+            if (done_callback !== null) {
+            done_callback(this.responseText);
+            }
+        };
+        xhttp.open("POST", endpoint);
+        xhttp.send(query);
+      }
+      refreshFailuresStatistics();
+        setInterval(function () {
+          //refreshAlertsTable();
+          refreshFailuresStatistics();
+        }, 1000);
+
+        function refreshFailuresStatistics() {
+          ajax_post_request(
+            "/rtx_get", "query=provide_failures_statistics_json",
+            function (result) {
+              console.log("query result = " + result.trim());
+              //debugger;
+              var jsObj = JSON.parse(result);
+
+              var lastTotalFailures = document.getElementById( "totalFailures" ).innerHTML;
+              var lastTotalPending = document.getElementById( "totalPending"  ).innerHTML;
+
+              document.getElementById( "totalFailures" ).innerHTML = jsObj.totalFailures;
+              var totalFailures = jsObj.totalFailures;
+              
+              document.getElementById( "totalPending"  ).innerHTML = jsObj.totalPending;
+              var totalPending = jsObj.totalPending;
+
+              if(totalFailures > lastTotalFailures || totalPending > lastTotalPending){
+                var currentdate = new Date(); 
+                var datetime = currentdate.getDate() + "/"
+                  + (currentdate.getMonth()+1)  + "/" 
+                  + currentdate.getFullYear() + " @ "  
+                  + currentdate.getHours() + ":"  
+                  + currentdate.getMinutes() + ":" 
+                  + currentdate.getSeconds();
+
+                document.getElementById( "LastDoneFailures"  ).innerHTML = datetime;
+              }
+            }
+        );
+      }
+      providePackagesStatistics();
+        setInterval(function () {
+          providePackagesStatistics();
+        }, 1000);
+
+      function providePackagesStatistics(){
+        ajax_post_request(
+            "/rtx_get", "query=provide_packages_statistics_json",
+            function (result) {
+              console.log("query result = " + result.trim());
+              //debugger;
+              var jsObj = JSON.parse(result);
+
+              var lastTotalStored = document.getElementById( "stored" ).innerHTML;
+              var lastTotalInStock = document.getElementById( "currentInStock"  ).innerHTML;
+              var lastTotalWithdrawn = document.getElementById( "withdrawn"  ).innerHTML;
+
+              document.getElementById( "stored" ).innerHTML = jsObj.stored;
+              var totalStored = jsObj.stored;
+
+              document.getElementById( "currentInStock"  ).innerHTML = jsObj.inStock;
+              var totalInStock = jsObj.inStock;
+
+              document.getElementById( "withdrawn"  ).innerHTML = jsObj.withdrawn;
+              var totalWithdrawn = jsObj.withdrawn;
+              
+              var currentdate = new Date(); 
+                var datetime = currentdate.getDate() + "/"
+                  + (currentdate.getMonth()+1)  + "/" 
+                  + currentdate.getFullYear() + " @ "  
+                  + currentdate.getHours() + ":"  
+                  + currentdate.getMinutes() + ":" 
+                  + currentdate.getSeconds();
+
+              if(totalStored != lastTotalStored){
+                document.getElementById( "LastDoneStored"  ).innerHTML = datetime;
+              }
+              if(totalInStock != lastTotalInStock){
+                document.getElementById( "LastDoneInStock"  ).innerHTML = datetime;
+              }
+              if(totalWithdrawn != lastTotalWithdrawn){
+                document.getElementById( "LastDoneWithdrawn"  ).innerHTML = datetime;
+              }
+            }
+        );
+      }
+    </script>
+  </head>
+  <body>
+    <div class="VStack iframe-container">
+      <!-- divs inside stacked Vertically-->
+      <div>
+        <h1 style="padding: 5px">The dashboard</h1>
+      </div>
+      <div class="HStack">
+        <!-- divs inside stacked Horizontally-->
+        <div class="VStack VStack-align-start" style="padding:5px;">
+          <div class="card" style="width: 300px; margin: 5px;">
+              <p><b>Total failures</b>:   <span id="totalFailures">0</span>  </p>
+              <p><b>Total pending</b>:  <span id="totalPending">0</span> </p>
+              <p><b>Last done</b>:   <span id="LastDoneFailures"></span>  </p>
+          </div>
+        </div> 
+
+        <div class="VStack VStack-align-start" style="padding: 5px">
+          <div class="card" style="width: 300px; margin: 5px">
+            <p><b>Stored</b>:   <span id="stored">0</span>  </p>
+            <p><b>Last done</b>:   <span id="LastDoneStored"></span>  </p>
+          </div>
+          <!-- divs inside stacked Vertically
+          <div class="card" style="width: 300px; margin: 5px">
+            <canvas id="storedChart" width="400" height="400"></canvas>
+          </div>-->
+        </div>
+
+        <div class="VStack VStack-align-start" style="padding: 5px">
+          <div class="card" style="width: 300px; margin: 5px">
+            <p><b>Withdrawn</b>:   <span id="withdrawn">0</span>  </p>
+            <p><b>Last done</b>:   <span id="LastDoneWithdrawn"></span>  </p>
+          </div>
+        </div>
+
+        <div class="VStack VStack-align-start" style="padding: 5px">
+          <div class="card" style="width: 300px; margin: 5px">
+            <p><b>Current in Stock</b>:   <span id="currentInStock">0</span>  </p>
+            <p><b>Last done</b>:   <span id="LastDoneInStock"></span>  </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

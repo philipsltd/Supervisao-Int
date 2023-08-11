@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="hmi.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js" integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  </head> 
+</head>
+  <body>
+    <div class="VStack iframe-container">
+      <div class="HStack">
+        <label for="x_is_at"> X:</label>
+        <input type="text" id="x_is_at" style="width: 4vw" />
+        <label for="x_moving"> X_moving:</label>
+        <input type="text" id="x_moving" style="width: 2vw" />
+        <br>
+        <label for="z_is_at"> Z:</label>
+        <input type="text" id="z_is_at" style="width: 4vw" />
+        <label for="z_moving"> Z_moving:</label>
+        <input type="text" id="z_moving" style="width: 2vw" />
+        <br>
+        <label for="y_is_at"> Y:</label>
+        <input type="text" id="y_is_at" style="width: 4vw" />
+        <label for="y_moving"> Y_moving:</label>
+        <input type="text" id="y_moving" style="width: 2vw" />
+        <br>
+      </div>      
+    </div>
+    <div style="width: 300px; height: 300px; margin: 5px">
+      <canvas id="axis_chart" width="100" height="100"></canvas>
+    </div>
+    <script>
+      const XX_INDEX = 0;
+      const YY_INDEX = 1;
+      const ZZ_INDEX = 2;
+      const labels = [];
+      const data = {
+        labels: labels,
+        datasets: [
+          {
+            // XX_DATASET
+            label: "XX",
+            backgroundColor: "rgb(223, 68, 68)",
+            borderColor: "rgb(223, 68, 68)",
+            data: [],
+          },
+          {
+            // YY_DATASET
+            label: "YY",
+            backgroundColor: "rgb(45, 189, 69)",
+            borderColor: "rgb(45, 189, 69)",
+            data: [],
+          },
+          {
+            // ZZ_DATASET
+            label: "ZZ",
+            borderColor: "rgb(45, 160, 189)",
+            backgroundColor: "rgb(45, 160, 189)",
+            data: [],
+          },
+        ],
+      };
+
+      const config = {
+        type: "line",
+        data: data,
+        options: {},
+      };
+
+      const myChart = new Chart(document.getElementById("axis_chart"), config);
+
+      function addData(chart, label, dataset_index, value) {
+        /*
+        chart.data.labels.push(label);
+        chart.data.datasets.forEach((dataset) => {
+        dataset.data.push(value);
+        });
+        */
+        chart.data.datasets[dataset_index].data.push(value);
+      }
+
+      function removeData(chart) {
+        chart.data.labels.shift();
+        chart.data.datasets.forEach((dataset) => {
+          dataset.data.shift();
+        });
+
+        //chart.data.datasets[dataset_index].data.shift();
+        chart.update("none");
+        }
+
+        setInterval(function () {
+          ajax_post_request(
+            "/rtx_get",
+            "query=provide_warehouse_states",
+            function (response) {
+              //console.log(response);
+              const storage = JSON.parse(response);
+              document.getElementById("x_is_at").value = storage.x;
+              document.getElementById("x_moving").value = storage.x_moving;
+              document.getElementById("z_is_at").value = storage.z;
+              document.getElementById("z_moving").value = storage.z_moving;
+              document.getElementById("y_is_at").value = storage.y;
+              document.getElementById("y_moving").value = storage.y_moving;
+
+              var push_label = false;
+              var valueX = 0, valueY = 0, valueZ = 0;
+              var d = new Date();
+              var time = "" + d.getMinutes() + ":" + d.getSeconds();
+              push_label = true;
+
+              //debugger;
+              if (myChart.data.labels.length > 30) {
+                removeData(myChart);
+              }
+              //debugger;
+              if (storage.x !== "-1" && typeof storage.x != "undefined") {
+                valueX = storage.x;
+              }
+              addData(myChart, time, XX_INDEX, valueX);
+              
+              if (storage.y !== "-1" && typeof storage.y != "undefined") {
+                valueY = storage.y;
+              }
+              addData(myChart, time, YY_INDEX, valueY);
+              
+              if (storage.z !== "-1" && typeof storage.z != "undefined") {
+                valueZ = storage.z;
+              }
+              addData(myChart, time, ZZ_INDEX, valueZ);
+              
+              if (push_label === true) {
+                myChart.data.labels.push(time);
+              }
+              myChart.update("none");
+
+              }
+        );
+      }, 500);
+    </script>
+  </body>
+</html>

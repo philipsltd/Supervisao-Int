@@ -1,0 +1,191 @@
+.HStack {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.HStack-align-start {
+    align-items: flex-start;
+}
+
+.VStack {
+    display: flex;
+    flex-direction: column;
+    /* flex-wrap: wrap; */
+}
+
+.VStack-align-start {
+    align-items: flex-start;
+}
+
+
+.flex-container {
+    display: flex;
+    flex-direction: row;
+    background-color: green;
+    width: 100vw;
+    height: 95vh;
+}
+
+.iframe-container {
+    display: flex;
+    /*flex-wrap: wrap;*/
+    background-color: darkcyan;
+    width: 100vw;
+    height: 92vh;
+}
+
+.hmiFooter {
+    background-color: lightblue;
+    height: 5vh;
+    padding: 5px;
+}
+
+
+
+.menuAtLeft {
+    width: 20vw;
+    flex-direction: column;
+    max-width: 100px;
+    background-color: green;
+}
+
+
+.contentOfHMI {
+    display: flex;
+    flex-direction: row;
+    background-color: darkcyan;
+    width: 86vw;
+    margin: 5px;
+    
+}
+
+.menuItem {
+    background-color: darkcyan;
+    color: white;
+    padding: 5px;
+    margin: 5px;
+}
+
+
+.menuItem:hover {
+        color: blue;
+        background-color: #ff6a00;
+        
+}
+
+
+.menuItem:focus {
+    background-color: red;
+    transition: 1s;
+    color: black;
+}
+
+.menuItemFocus {
+    background-color: red;
+    transition: 1s;
+    color: black;
+}
+
+
+.alarmHMI {
+    visibility: hidden;
+}
+
+iframe {
+    width: 100vw;
+    height: 100vh;
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* cards*/
+.card {
+    /* Add shadows to create the "card" effect */
+    background-color: lightgray;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    padding: 5px ;
+    max-width: 300px;
+    margin: auto;
+
+    font-family: arial;
+}
+
+.card:hover {
+    box-shadow: 0 16px 16px 0 rgba(0,0,0,0.2);
+ }
+
+.grid-container {
+    display: grid;
+    max-width: 91vw;
+    max-height: 87vh;
+    grid-template-columns: auto auto auto;
+    background-color: darkcyan;
+    padding: 0px;
+}
+
+.grid-item {
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 0px solid rgba(0, 0, 0, 0.8);
+    padding: 5px;
+    margin: 10px;
+    text-align: center;
+}
+
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+
+/* tool tips*/
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+  }
+  
+  /* Tooltip text */
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 150px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    font-size: 12px;
+  
+    /* Position the tooltip text */
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+  
+    /* Fade in tooltip */
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  
+  /* Tooltip arrow */
+  .tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+  }
+  
+  /* Show the tooltip text when you mouse over the tooltip container */
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+  }

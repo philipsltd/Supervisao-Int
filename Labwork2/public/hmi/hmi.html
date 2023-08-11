@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<p><b>time</b>:   <span id="time"></span>  </p>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>warehoure HMI</title>
+        <link rel="stylesheet" href="hmi.css">
+
+        <link rel="icon" type="image/png" href="favicon-32x32.png">
+    
+        <script src="hmi.js"></script>
+    </head>
+<body>
+    <div class="flex-container">
+        <div class="menuAtLeft"> <!-- esquerda -->
+            <div class="menuItem" tabindex="0" onclick="dashboardClicked()" >Dashboard</div>
+            <div class="menuItem" tabindex="1" onclick="executionClicked()">Execution</div>
+            <div class="menuItem" tabindex="2" onclick="monitoringCliked()">Monitoring</div>
+            <div class="menuItem" tabindex="3" onclick="failuresCliked()">Failures</div>
+        </div>
+        <div class="contentOfHMI" id="contentOfHMI"> <!-- direita -->
+
+        </div>
+    </div>
+    <div class="hmiFooter">
+        &#169; SI: DEEC/FCT/UNL
+    </div>
+
+    <!-- <div class="VStack" style="padding-left: 5px; padding-right: 20px;">
+        <div style="padding-bottom: 10px;">X-LEFT</div>
+        <div class="switch_button">
+            <input
+                type = "checkbox"
+                id="switchXXLeft"
+                onclick="moveXLeftClick();"
+            />
+            <label></label>
+        </div>
+        <div class="tooltip" style="margin-top: 10px;">
+            <button type="button" style="background: lightgreen; width:50px;" onclick="moveXStepLeft();">Step</button>
+            <span class="tooltiptext">Move to previous position</span>
+        </div>
+    </div> -->
+
+    <script>
+        // simulate a click in an option
+        document.getElementsByClassName("menuItem")[1].focus();
+        document.getElementsByClassName("menuItem")[1].click();
+
+        var currentdate = new Date(); 
+        var datetime = currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear() + " @ "  
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes() + ":" 
+                + currentdate.getSeconds();
+
+        document.getElementById( "time"  ).innerHTML = datetime;
+
+    </script>
+</body>
+</html>

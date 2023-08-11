@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8" />
+  <title></title>
+  <title>SI 2021</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="hmi.js"></script>
+
+  <link rel="stylesheet" href="hmi.css" />
+    <style>
+        .longTextCss {
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          max-width: 50px;
+          word-wrap: break-word;
+        }
+
+        .longTextCss:hover {
+          cursor: pointer;
+        }
+
+        .actionButton {
+          /*width: 20px;
+          height: 10px;*/
+          font-size: 9px;
+        }
+
+        table>tbody>tr:nth-child(even) {
+          background-color: #594f4f;
+        }
+
+        table>tbody>tr:nth-child(odd) {
+          background-color: #a29393;
+        }
+
+        thead {
+          background-color: #8588de;
+        }
+        .tab {
+          display: inline-block;
+          margin-left: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="VStack iframe-container">
+        <div class="HStack">
+          <H1> Current Failures</H1>    
+        </div>
+        <div class="HStack">
+          <button type="button" class="button_command" onclick="emergencyStop();">Emergency Stop</button>
+          <span class="tab"></span>
+          <button type="button" class="button_command" onclick="emergencyResume();">Resume</button>
+        
+        </div>
+        <br> 
+        <div class="VStack">
+          <table style="width:100%;height:100%;">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Id</th>
+                <th>Description</th>
+                <th>Plan</th>
+                <th>Resolved</th>
+                <th>
+                  <div>
+                      <p>Actions</p>
+                      <button class="button actionButton" style="float:center;" onclick="deleteAllFailures('_');"> Delete all</button>
+                      
+                      <button class="button actionButton" style="float:center;" onclick="resolveAllFailures('_');">Resolve all</button>
+                </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody id="idTableBody"></tbody>
+          </table>
+        </div>
+    </div>
+      <script>
+        refreshFailuresTable();
+        setInterval(function () {
+          //refreshAlertsTable();
+          refreshFailuresTable();
+        }, 1000);
+    
+        /* THE OTHER JAVASCRIPT FUNCTIONS HERE */
+    
+        function refreshFailuresTable() {
+          ajax_post_request(
+            "/rtx_get", "query=provide_failures_json(false)",
+            function (result) {
+              //console.log("query result = " + result.trim());
+              //debugger;
+              var jsObj = JSON.parse(result);
+              //$("#xLabel").text("xMov: " + jsObj.x);
+              //console.log("query result = " + jsObj);
+              var lines = "";
+              for (var key in jsObj) {
+    
+                if (jsObj.hasOwnProperty(key)) {
+                  var o = jsObj[key];
+                  lines += `<tr>
+                                        <td>${o.type}</td>
+                                        <td>${o.id}</td>
+                                        <td>${o.msg}</td>                                    
+                                        <td class="longTextCss" onclick="showPlan('${o.plan}');">${o.plan} </td>
+                                        <td>${o.resolved}</td>
+                                        <td style="width: 25%">
+                                          <button class="button actionButton" onclick="resolveAllFailures(${o.id});">Resolve</button>
+                                          <button class="button actionButton" onclick="findPlan(${o.id});">Find plan</button>
+                                          <button class="button actionButton" onclick="executePlan(${o.id});">Execute</button>
+                                          <button class="button actionButton" onclick="deleteAllFailures(${o.id});">delete</button>
+                                        </td>
+                                     </tr>`;
+                }
+              }
+              document.getElementById("idTableBody").innerHTML = lines;
+            }
+          );
+        }
+           
+        function showPlan(Plan) {
+            confirm(Plan);
+        }
+    
+    
+        function findPlan(id) {
+          ajax_post_request(
+            "/rtx_get", `query=find_plan(${id})`, function (result) {
+              refreshFailuresTable();
+              console.log("result = " + result);
+          });
+        }
+    
+        function executePlan(id) {
+          ajax_post_request(
+            "/rtx_get", `query=execute_plan(${id})`, function (result) {
+              refreshFailuresTable();
+              console.log("result = " + result);
+          });
+        }
+    
+        function deleteAllFailures(id) {
+          ajax_post_request(
+            "/rtx_get", `query=delete_all_failures(${id})`, function (result) {
+              refreshFailuresTable();
+              console.log("result = " + result);
+          });
+        }
+    
+        function resolveAllFailures(id) {
+          ajax_post_request(
+            "/rtx_get", `query=resolve_all_failures(${id})`, function (result) {
+              refreshFailuresTable();
+              console.log("result = " + result);
+          });
+        }
+
+        function emergencyStop(){
+          ajax_post_request(
+            "/rtx_get", `query=start_emergency_stop`, function (result) {
+              console.log("result = " + result);
+          });
+        }
+
+        function emergencyResume(){
+          ajax_post_request(
+            "/rtx_get", `query=resume_emergency_stop`, function (result) {
+              console.log("result = " + result);
+          });
+        }
+      </script>
+</body>
+</html>

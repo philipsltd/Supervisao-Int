@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+    <link rel="stylesheet" href="hmi.css" />
+    <link rel="stylesheet" href="electrical.css" />
+    <script src="hmi.js"></script>
+  </head>
+
+  <body>
+    <div class="VStack">
+      <div> <h1 style="padding: 5px">Execution</h1> </div>
+      <div class="HStack" style="padding-left: 5px">
+        
+        <div class="VStack" style="padding-left: 5px; padding-right: 20px">
+          <div style="padding-bottom: 10px">X-LEFT</div>
+          <div class="switch_button">
+            <input
+              type="checkbox"
+              id="switchXXLeft"
+              onclick="moveXLeftClick();"
+            />
+            <label></label>
+          </div>
+          
+          <div class="tooltip" style="margin-top: 10px;">
+            <button type="button"  style="background: lightgreen; width:50px;"  onclick="moveXStepLeft();">Step</button>
+            <span class="tooltiptext">Move to previous position</span>
+          </div>
+        </div>
+
+        <div class="VStack" style="padding-left: 5px; padding-right: 20px">
+          <div style="padding-bottom: 10px">X-RIGHT</div>
+          <div class="switch_button">
+            <input
+              type="checkbox"
+              id="switchXXRight"
+              onclick="moveXRightClick();"
+              />
+            <label></label>
+          </div>
+          <div class="tooltip" style="margin-top: 10px;">
+            <button type="button"  style="background: lightgreen; width:50px;"  onclick="moveXStepRight();">Step</button>
+            <span class="tooltiptext">Move to previous position</span>
+          </div>
+        </div>
+        
+        <div class="VStack" style="padding-left: 5px; padding-right: 20px">
+          <div style="padding-bottom: 10px">Z-UP</div>
+          <div class="switch_button">
+            <input
+              type="checkbox"
+              id="switchZZUp"
+              onclick="moveUpClick();"
+            />
+            <label></label>
+          </div>
+          <div class="tooltip" style="margin-top: 10px;">
+            <button type="button"  style="background: lightgreen; width:50px;"  onclick="moveZStepUp();">Step</button>
+            <span class="tooltiptext">Move to previous position</span>
+          </div>
+        </div>
+        <div class="VStack" style="padding-left: 5px; padding-right: 20px">
+          <div style="padding-bottom: 10px">Z-DOWN</div>
+          <div class="switch_button">
+            <input
+              type="checkbox"
+              id="switchZZDown"
+              onclick="moveDownClick();"
+            />
+            <label></label>
+          </div>
+          <div class="tooltip" style="margin-top: 10px;">
+            <button type="button"  style="background: lightgreen; width:50px;"  onclick="moveZStepDown();">Step</button>
+            <span class="tooltiptext">Move to previous position</span>
+          </div>
+        </div>
+
+        <div class="VStack" style="padding-left: 5px; padding-right: 20px">
+          <div style="padding-bottom: 10px">Y-IN</div>
+          <div class="switch_button">
+            <input
+              type="checkbox"
+              id="switchYYIn"
+              onclick="moveForwardClick();"
+            />
+            <label></label>
+          </div>
+          <div class="tooltip" style="margin-top: 10px;">
+            <button type="button"  style="background: lightgreen; width:50px;"  onclick="moveYStepForward();">Step</button>
+            <span class="tooltiptext">Move to previous position</span>
+          </div>
+        </div>
+
+        <div class="VStack" style="padding-left: 5px; padding-right: 20px">
+          <div style="padding-bottom: 10px">Y-OUT</div>
+          <div class="switch_button">
+            <input
+              type="checkbox"
+              id="switchYYOut"
+              onclick="moveBackwardClick();"
+            />
+            <label></label>
+          </div>
+          <div class="tooltip" style="margin-top: 10px;">
+            <button type="button"  style="background: lightgreen; width:50px;"  onclick="moveYStepBackward();">Step</button>
+            <span class="tooltiptext">Move to previous position</span>
+          </div>
+        </div>
+
+        
+
+         
+      </div>
+
+      <div class="HStack">
+        <button type="button" class="button_command" onclick="Store_part();">Store part!</button>
+        <button type="button" class="button_command" onclick="Withdraw_part();">Withdraw part!</button>
+      </div>
+    </div>
+
+    <div class="HStack">
+        <button type="button" class="button_command">do_something_else1!</button>
+        <button type="button" class="button_command">do_something_else2!</button>
+    </div>
+    <script>
+      function setSwitchState(theSwitch, theOpositeSwitch) {
+        var theSwitch1 = document.getElementById(theSwitch);
+        var theSwitch2 = document.getElementById(theOpositeSwitch);
+
+        if (theSwitch1.checked === true) 
+          theSwitch2.checked = false;
+        return theSwitch1.checked;
+      }
+
+      function moveXLeftClick() { 
+        var state =  setSwitchState('switchXXLeft', 'switchXXRight');
+        var query =  state? "assert_command(move_x_left)" : "assert_command(stop_x)";
+        console.log("query  = " + query );
+        ajax_post_request("/rtx_get", "query="+query, function (result) {
+            console.log("query result = " + result.trim());
+        });
+        
+      }
+
+      function moveXRightClick() { 
+        var state =  setSwitchState('switchXXRight',  'switchXXLeft');
+        var query =  state? "assert_command(move_x_right)" : "assert_command(stop_x)";
+        console.log("query  = " + query );
+        ajax_post_request("/rtx_get", "query="+query, function (result) {
+            console.log("query result = " + result.trim());
+        });
+        
+      }
+
+      function moveXStepRight() {
+       // first it must leave the current position, then waits for the next position, ...
+       var plan = "assert(plan(step_x,[move_x_right,not(state(x_is_at(_))),state(x_is_at(_)), stop_x])).";
+
+        ajax_post_request("/rtx_get", "query="+ plan , function (result) {
+          console.log("query result = " + result.trim());
+        });
+      }
+
+      function moveXStepLeft() {
+        // move by each position
+        // first it must leave the current position, then waits for the next position, ...
+        var plan = "assert(plan(step_x,[move_x_left,not(state(x_is_at(_))),state(x_is_at(_)), stop_x]))";
+        console.log("plan  = " + plan );
+        ajax_post_request("/rtx_get", "query="+ plan , function (result) {
+          console.log("query result = " + result.trim());
+        });
+      }
+
+      // --Z--
+      function moveUpClick() {
+          var state = setSwitchState('switchZZUp', 'switchZZDown');
+          var query = state? "assert_command(move_z_up)" : "assert_command(stop_z)";
+          console.log("query = " + query);
+          ajax_post_request("/rtx_get", "query=" + query, function(result){
+              console.log("query result = " + result.trim())
+          });
+      }
+      function moveDownClick() {
+          var state = setSwitchState('switchZZDown', 'switchZZUp');
+          var query = state? "assert_command(move_z_down)" : "assert_command(stop_z)";
+          console.log("query = " + query);
+          ajax_post_request("/rtx_get", "query=" + query, function(result){
+              console.log("query result = " + result.trim())
+          });
+      }
+
+      function moveZStepUp(){
+          var plan = "assert(plan(step_z, [move_z_up, not(state(z_is_at(_))), state(z_is_at(_)), stop_z]))";
+          console.log("plan = " + plan);
+          ajax_post_request("/rtx_get", "query=" + plan , function(result){
+              console.log("query result = " + result.trim());
+          });
+      }
+
+      function moveZStepDown(){
+          var plan = "assert(plan(step_z, [move_z_down, not(state(z_is_at(_))), state(z_is_at(_)), stop_z]))";
+          console.log("plan = " + plan);
+          ajax_post_request("/rtx_get", "query=" + plan , function(result){
+              console.log("query result = " + result.trim());
+          });
+      }
+
+      // --Y--
+
+      function moveForwardClick() {
+          var state = setSwitchState('switchYYIn', 'switchYYOut');
+          var query = state? "assert_command(move_y_in)" : "assert_command(stop_y)";
+          console.log("query = " + query);
+          ajax_post_request("/rtx_get", "query=" + query, function(result){
+              console.log("query result = " + result.trim())
+          });
+      }
+
+      function moveBackwardClick() {
+          var state = setSwitchState('switchYYOut', 'switchYYIn');
+          var query = state? "assert_command(move_y_out)" : "assert_command(stop_y)";
+          console.log("query = " + query);
+          ajax_post_request("/rtx_get", "query=" + query, function(result){
+              console.log("query result = " + result.trim())
+          });
+      }
+
+      function moveYStepForward(){
+          var plan = "assert(plan(step_y, [move_y_in, not(state(y_is_at(_))), state(y_is_at(_)), stop_y]))";
+          console.log("plan = " + plan);
+          ajax_post_request("/rtx_get", "query=" + plan , function(result){
+              console.log("query result = " + result.trim());
+          });
+      }
+
+      function moveYStepBackward(){
+          var plan = "assert(plan(step_y, [move_y_out, not(state(y_is_at(_))), state(y_is_at(_)), stop_y]))";
+          console.log("plan = " + plan);
+          ajax_post_request("/rtx_get", "query=" + plan , function(result){
+              console.log("query result = " + result.trim());
+          });
+      }
+
+      // NOT WORKING
+      function Store_part(){
+        // * test
+        /*var plan = "assert(plan(step_y, [move_y_out, not(state(y_is_at(_))), state(y_is_at(_)), stop_y]))";
+        console.log("plan = " + plan);
+        ajax_post_request("/rtx_get", "query=" + plan , function(result){
+            console.log("query result = " + result.trim());
+        });*/
+      
+        /*
+        var plan = `retrive_from_1_1`;
+          console.log("plan = " + plan);
+          ajax_post_request("/rtx_get", "query=" + plan, function(result){
+              console.log("query result = " + result.trim());
+          });*/
+
+        var plan = "start_retrieve_place_cell_sequential_plan( 1, 1.0 )";
+          console.log("plan = " + plan);
+          ajax_post_request("/rtx_get", "query=" + plan, function(result){
+              console.log("query result = " + result.trim());
+          });
+          
+      }
+    
+      // NOT COMPLETED
+      function Withdraw_part(){
+        var plan = "start_retrieve_place_right_sequential_plan(2, 2.0)";
+          console.log("plan = " + plan);
+          //ajax_post_request("/rtx_get", {query: plan});
+          ajax_post_request(
+            "/rtx_get",
+            { query: "start_retrieve_place_right_sequential_plan(2, 2.0)." },
+            function (result) {});
+
+          console.log("/rtx_get", "query=" + plan);
+      }
+
+
+    </script>
+  </body>
+</html>
