@@ -1,0 +1,6 @@
+C:\si\labwork1\serverEngine\Debug\serverEngine.exe
+C:\temp\labwork1\serverApp\Debug\serverEngine.exe
+C:\SI\labwork1\serverApp\Debug\serverEngine.exe
+D:\SI\Supervisao-Inteligente\Labwork1\serverApp\Debug\serverEngine.exe
+D:\SI2\Supervisao-Inteligente\Labwork1\serverApp\Debug\serverEngine.exe
+D:\SI\Supervisao-Inteligente\Labwork2\serverApp\Debug\serverEngine.exe
